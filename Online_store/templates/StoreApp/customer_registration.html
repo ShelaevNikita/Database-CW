@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block style %}
+    <style>
+        label { font-size: 20px; }
+        input { font-size: 18px; margin-top: 5px;}
+        i { font-size: 20px; }
+        #form_registration { text-align: center; }
+        #customer_registration { width: 200px; height: 40px; font-size: medium; }
+        #date_birth { width: 155px; }
+        #message { text-align: center; color: red; font-size: 18px; }
+    </style>
+{% endblock %}
+{% block content %}
+{% if message != '' %}
+    <div id="message" class="content"><strong>{{message}}</strong></div>
+{% endif %}
+<form action="{% url 'StoreApp:customer_new' customer %}" method="post" autocomplete="on" id="form_registration">
+    {% csrf_token %}
+    <input type="text" required placeholder="Login" name="login" /><br>
+    <input type="password" required placeholder="Password" name="password" /><br>
+    <input type="password" required placeholder="Password (again)" name="password_again" /><br>
+    <input type="text" required placeholder="Name" name="first_name" /><br>
+    <input type="text" required placeholder="Surname" name="second_name" /><br>
+    <i>Gender: </i>
+    <input type="radio" id="radio_1" value="M" name="gender" checked/><label for="radio_1">Male</label>
+    <input type="radio" id="radio_2" value="F" name="gender" /><label for="radio_2">Female</label><br>
+    <i>Date of Birth: </i><input type="date" id="date_birth" required placeholder="Date of Birth" name="date_of_birth" /><br>
+    <input type="tel" required placeholder="Phone" name="phone" pattern="^\+?\d{1,3}-[(]\d{3}[)]-\d{3}-\d{4}$"/><br>
+    <input type="email" required placeholder="Email" name="email" /><br><br>
+    <button type="submit" id="customer_registration">Ready to register?</button><br>
+</form>
+{% endblock %}

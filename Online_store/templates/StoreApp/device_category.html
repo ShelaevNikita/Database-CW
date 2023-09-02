@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block style %}
+<style>
+    strong { margin-left: 20px; }
+    #category { color: midnightblue; text-decoration: none; text-transform: capitalize; }
+</style>
+{% endblock %}
+{% block content %}
+    {% if list_category %}
+    <ul>
+        {% for category in list_category %}
+            <li><a href="{% url 'StoreApp:category_next' category.category_name category.id customer %}" id="category">
+                {{category.category_name}}</a><br></li>
+        {% endfor %}
+    </ul>
+    {% else %}
+        <strong>Категории не найдены :( Повторите попытку позже!</strong>
+    {% endif %}
+{% endblock %}

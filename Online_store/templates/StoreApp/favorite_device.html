@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block style %}
+<style>
+    strong { margin-left: 20px; }
+    #favorite_device { color: midnightblue; text-decoration: none; }
+    #clear { margin-left: 50px; height: 40px; width: 200px; font-size: 20px; color: firebrick; }
+</style>
+{% endblock %}
+{% block content %}
+    {% if list_favorite %}
+    <form action="{% url 'StoreApp:favorite_clear' customer %}" method="post" id="favorite_clear">
+        {% csrf_token %}
+        <button type="submit" id="clear">Очистить список</button>
+    </form><br>
+    <ul>
+        {% for favorite in list_favorite %}
+            <li><a href="{% url 'StoreApp:device_criteria' favorite.device.id 0 customer %}" id="device">
+                {{favorite.date_last_view}}: {{favorite.device}}</a><br></li>
+        {% endfor %}
+    </ul>
+    <strong>Всего устройств: {{list_favorite|length}}</strong>
+    {% else %}
+        <strong>Список просмотренных устройств пуст :(</strong>
+    {% endif %}
+{% endblock %}

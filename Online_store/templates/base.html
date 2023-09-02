@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title> Онлайн-магазин электроники </title>
+    <style type="text/css">
+        h1 { text-align: center; }
+        address { text-align: center; }
+        main { min-height: 100%; margin-left: 20px; margin-top: 20px; padding-bottom: 40px; }
+        body { height: 100%; }
+        nav { margin-left: 20px; overflow: hidden; background-color: #333; font-family: Arial, Helvetica, sans-serif; }
+        nav a { float: right; font-size: 16px; color: white; text-align: center; padding: 14px 16px; text-decoration: none; }
+        nav a:hover { background-color: red; }
+        show { display: block; }
+        footer { text-align: center; width: 100%; height: 30px; margin: auto; clear: both; }
+        #device_list { float: left; }
+        #category_list { float: left; }
+        #device_filter { float: left; }
+    </style>
+    {% block style %}{% endblock %}
+</head>
+<body>
+    <header>
+        <h1> Онлайн-магазин электронных устройств </h1>
+    </header>
+    <hr>
+    <nav>
+        <a href = "{% url 'StoreApp:category' customer %}" id="category_list">Категории</a>
+		<a href = "{% url 'StoreApp:device' customer %}" id="device_list">Устройства</a>
+        <a href = "{% url 'StoreApp:filter' customer %}" id="device_filter">Фильтр устройств</a>
+        {% if customer == 0 %}
+        <a href = "{% url 'StoreApp:customer_registration' customer %}" id="registration">Регистрация</a>
+        <a href = "{% url 'StoreApp:customer_entry' customer %}" id="entry">Войти</a>
+        {% else %}
+        <a href = "{% url 'StoreApp:customer_exit' %}" id="exit">Выйти</a>
+        <a href = "{% url 'StoreApp:customer_profile' customer %}" id="profile">Профиль</a>
+        <a href = "{% url 'StoreApp:basket' customer %}" id="basket">Корзина</a>
+        <a href = "{% url 'StoreApp:favorite_device' customer %}" id="device_like">Просмотрено</a>
+        <a href = "{% url 'StoreApp:order' customer %}" id="order_nav">Заказы</a>
+        {% endif %}
+    </nav>
+    <hr>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <hr>
+        <strong>Time: {% now "SHORT_DATETIME_FORMAT" %}</strong><br>
+        <hr>
+		<address>Шелаев Н. 3530901/80201. 2021г.</address>
+	</footer>
+</body>
+</html>

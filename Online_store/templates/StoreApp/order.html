@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block style %}
+<style>
+    button { margin-top: 5px; margin-left: 20px; width: 200px; font-size: 18px; height: 30px; }
+    #message { text-align: center; color: darkmagenta; font-size: 18px; }
+    #flex-container { display: -webkit-flex; display: flex; -webkit-flex-direction: row; flex-direction: row; }
+    #flex-container > .flex-item { -webkit-flex: auto; flex: auto; }
+    #info { display: inline-block; float: right; width: 50%; margin-left: 10px; vertical-align: top; }
+    #order { display: inline-block; float: left; overflow: hidden; margin-left: 10px; vertical-align: top; }
+    #total { font-size: 25px; margin-left: 50px; }
+</style>
+{% endblock %}
+{% block content %}
+{% if message != '' %}
+    <div id="message" class="content"><strong>{{message}}</strong><br><br></div>
+{% endif %}
+{% if list_order %}
+<div id="flex-container">
+<div class="content" id="order">
+{% if list_order %}
+<ol>
+    {% for order in list_order %}
+    <li>
+        <b>Когда сделан заказ? {{order.date_of_purchase}}</b><br>
+        <b>Номер заказа: {{order.order_number}}</b><br>
+        <b>Магазин: {{order.office.city}}, {{order.office.street}}, {{order.office.house_number}} | {{order.office}}</b><br>
+        <b>Когда будет готов заказ? {{order.date_of_delivery}}</b><br>
+        <b>Статус заказа: {{order.order_flag}}</b><br>
+        <form action="{% url 'StoreApp:order_device' customer order.order_number %}" method="post" id="order_device">
+            {% csrf_token %}
+            <button type="submit" id="button_device">Показать устройства</button>
+        </form>
+        <form action="{% url 'StoreApp:order_delete' customer order.order_number %}" method="post" id="order_delete">
+            {% csrf_token %}
+            <button type="submit" id="button_delete">Отменить заказ</button>
+        </form>
+        <br>
+    </li>
+    {% endfor %}
+</ol>
+<strong id="all">Всего заказов: {{list_order|length}}</strong>
+{% else %}
+<br><strong id="fail">У вас ещё нет заказов :(</strong>
+{% endif %}
+</div>
+<div class="content" id="info">
+    {% if list_device.0 %}
+    <strong id="total">Общая цена: {{list_device.1}} рублей</strong><br>
+     <ol>
+        {% for device in list_device.0 %}
+        <li>
+            <b>Что? </b><i> {{device.device}}</i><br>
+            <b>Сколько? </b><i> {{device.device_count}}</i><br>
+            <b>Цена за одно устройство: </b><i> {{device.device_price}} рублей </i><br><br>
+        </li>
+        {% endfor %}
+    </ol>
+    {% endif %}
+</div>
+</div>
+{% endif %}
+{% endblock %}

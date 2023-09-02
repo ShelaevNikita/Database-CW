@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block style %}
+    <style>
+        input { font-size: 18px; margin-top: 5px; }
+        #form_entry { text-align: center; }
+        #customer_entry { width: 150px; height: 35px; font-size: medium; }
+        #message { text-align: center; color: red; font-size: 18px; margin-bottom: 5px; }
+    </style>
+{% endblock %}
+{% block content %}
+{% if message != '' %}
+    <div id="message" class="content"><strong>{{message}}</strong></div>
+{% endif %}
+<form action="{% url 'StoreApp:customer_entry_check' customer %}" method="post" autocomplete="on" id="form_entry">
+    {% csrf_token %}
+    <input type="text" required placeholder="Login" name="login" /><br>
+    <input type="password" required placeholder="Password" name="password" /><br><br>
+    <button type="submit" id="customer_entry">Entry?</button><br>
+</form>
+{% endblock %}

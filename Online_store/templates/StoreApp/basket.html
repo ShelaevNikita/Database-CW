@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block style %}
+<style>
+    strong { margin-left: 20px; }
+    radio { font-size: 18px; margin-top: 5px; }
+    button { margin-top: 5px; margin-left: 20px; width: 200px; font-size: 18px; height: 30px; }
+    form { text-align: left; }
+    #device_delete { margin-left: 20px; color: crimson; }
+    #flex-container { display: -webkit-flex; display: flex; -webkit-flex-direction: row; flex-direction: row; }
+    #flex-container > .flex-item { -webkit-flex: auto; flex: auto; }
+    #basket_class { display: inline-block; float: right; width: 50%; margin-left: 10px; vertical-align: top; }
+    #order { display: inline-block; float: left; overflow: hidden; margin-left: 10px; vertical-align: top; }
+    #device_choose { width: 30px; height: 30px; }
+    #total { font-size: 25px; }
+    #message { text-align: center; color: darkmagenta; font-size: 18px; }
+    #office_set { margin-left: 20px; width: 450px; height: 30px; font-size: 18px; }
+</style>
+{% endblock %}
+{% block content %}
+{% if message != '' %}
+    <div id="message" class="content"><strong>{{message}}</strong><br><br></div>
+{% endif %}
+<div id="flex-container">
+<div class="content" id="basket_class">
+    {% if list_basket %}
+    {% if flag_order == 0 %}
+    <ol>
+        {% for basket in list_basket %}
+        <li>
+            <b>Когда? </b><i> {{basket.date_device_added}}</i><br>
+            <b>Что? </b><i> {{basket.device}}</i><br>
+            <b>Сколько? </b><i> {{basket.device_volume}}</i><br>
+            <form action="{% url 'StoreApp:device_from_basket' basket.device.id customer %}" method="post" id="basket_delete">
+                {% csrf_token %}
+                <button type="submit" id="device_delete">Удалить из корзины</button>
+            </form><br>
+        </li>
+        {% endfor %}
+    </ol>
+    <strong>Всего записей в корзине: {{list_basket|length}}</strong>
+    {% elif flag_order == 1 %}
+        <form action="{% url 'StoreApp:order_next' customer %}" method="post" id="basket_order_next">
+        {% csrf_token %}
+        <button type="submit" id="button_order_next">Подтвердить выбор</button><br><br>
+        {% for basket in list_basket %}
+            <b>Что? </b><i> {{basket.device}}</i><br>
+            <b>Сколько? </b><i> {{basket.device_volume}}</i>
+            <input type="checkbox" name="device_choose" id="device_choose" checked value="{{basket.basket_number}}"/><br><br>
+        {% endfor %}
+    </form>
+    {% else %}
+        <ol>
+        {% for device in list_basket %}
+        <li>
+            <b>Что? </b><i> {{device.0.device_name}}</i><br>
+            <b>Сколько? </b><i> {{device.1}}</i><br>
+            <b>Цена за одно устройство: </b><i> {{device.0.price}} рублей </i><br><br>
+        </li>
+        {% endfor %}
+    </ol>
+    {% endif %}
+    {% else %}
+    <strong>Ваша Корзина пуста :(</strong> 
+    {% endif %}
+</div>
+<div class="content" id="order">
+    {% if list_basket|length > 0 %}
+    {% if flag_order == 0 %}
+    <form action="{% url 'StoreApp:create_order' customer %}" method="post" id="basket_order_begin">
+         {% csrf_token %}
+         <button type="submit" id="button_order_begin">Оформить заказ</button>
+    </form>
+    {% else %}
+    <form action="{% url 'StoreApp:order_no' customer %}" method="post" id="basket_order_next">
+        {% csrf_token %}
+        <button type="submit" id="button_order_next">Отменить</button>
+    </form><br>
+    {% endif %}
+    {% if flag_order == 2 %}
+    <strong id="total">Общая цена: {{price}} рублей</strong><br><br>
+     <form action="{% url 'StoreApp:order_store' customer token %}" method="post" id="office_choose">
+        {% csrf_token %}
+        <input type="radio" id="radio_1" value="1" name="order" checked/><label for="radio_1">Есть в наличии</label>
+        <input type="radio" id="radio_2" value="2" name="order" /><label for="radio_2">Не важно</label><br><br>
+        <button type="submit" id="button_office_choose">Выбрать магазин</button>
+    </form>
+    {% elif flag_order == 3 %}
+    <strong id="total">Общая цена: {{price}} рублей</strong><br><br>
+    <form action="{% url 'StoreApp:order_finish' customer token %}" method="post" id="order_finish">
+        {% csrf_token %}
+        <input type="text" required placeholder="Магазин" id="office_set" name="office_set" list="datalist_office" value="ANY?"/><br>
+        <datalist id="datalist_office">
+        {% for office in list_store %}
+        <option value="{{office.city}}|{{office.street}}|{{office.store_number}}">
+        {% endfor %}
+        <option value="ANY?">
+        </datalist>
+        <br><input type="radio" id="radio_3" value="1" name="courier" checked/><label for="radio_3">Самовывоз</label>
+        <input type="radio" id="radio_4" value="2" name="courier" /><label for="radio_4">Курьер</label><br><br>
+        <button type="submit" id="button_order_finish">Подтвердить заказ</button>
+    </form>
+    {% endif %}
+    {% endif %}
+</div>
+</div>
+{% endblock %}

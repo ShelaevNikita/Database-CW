@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% block style %}
+<style>
+    h2 { text-align: center; }
+    #flex-container { display: -webkit-flex; display: flex; -webkit-flex-direction: row; flex-direction: row; }
+    #flex-container > .flex-item { -webkit-flex: auto; flex: auto; }
+    #comment { display: inline-block; float: right; width: 50%; margin-left: 10px; vertical-align: top; }
+    #device { display: inline-block; float: left; overflow: hidden; margin-left: 10px; vertical-align: top; }
+    #output { width: 20px; }
+    #comment_new { margin-left: 25px; } 
+    #comment_button { width: 180px; height: 30px; }
+    #message { text-align: center; color: darkmagenta; font-size: 18px; }
+    #list_comment { margin-left: 25px; }
+    #feedback { margin-left: 15px; }
+    #basket { margin-left: 20px; }
+    #basket_size { width: 100px; height: 25px; font-size: 16px; }
+    #device_button { width: 180px; height: 30px; color: crimson; font-size: 16px; }
+    #all { margin-left: 30px; }
+    #device_image { margin-left: 10px; height: 200px; width: 95px; }
+    #crit_button { width: 250px; height: 40px; font-size: 18px; }
+    #crit_no_button { width: 250px; height: 40px; font-size: 18px; }
+</style>
+{% endblock %}
+{% block content %}
+<h2>{{device.device_name}}</h2>
+{% if message != '' %}
+    <div id="message" class="content"><strong>{{message}}</strong><br><br></div>
+{% endif %}
+{% if customer > 0 %}
+<div id="flex-container">
+<div class="content" id="device">
+    <form action="{% url 'StoreApp:device_add_basket' device.id customer %}" method="post" autocomplete="on" id="basket">
+        {% csrf_token %}
+        <input type="number" placeholder="Сколько?" id="basket_size" name="basket_size" min="1" max="25"/>
+        <button type="submit" id="device_button">Добавить в корзину</button>
+    </form><br>
+{% endif %}
+<table>
+    <colgroup><col span="2" style="background-color: whitesmoke"></colgroup>
+    <tr>
+        <td>Цена: </td>
+        <td>{{device.price}} рублей</td>
+    </tr>
+    <tr>
+        <td>Рейтинг: </td>
+        <td>{{device.rating}}</td>
+    </tr>
+    <tr>
+        <td>Компания: </td>
+        <td>
+            {% if device.company is not None %}
+                {{device.company}}
+            {% else %}
+                Неизвестно
+            {% endif %}
+        </td>
+    </tr>
+    <tr>
+        <td>Гарантия: </td>
+        <td>{{device.warranty}} месяцев</td>
+    </tr>
+    <tr>
+        <td>Год выпуска: </td>
+        <td>{{device.release_year}}</td>
+    </tr>
+    <tr>
+        <td>Высота: </td>
+        <td>{{device.height}} мм</td>
+    </tr>
+    <tr>
+        <td>Ширина: </td>
+        <td>{{device.width}} мм</td>
+    </tr>
+    <tr>
+        <td>Толщина: </td>
+        <td>{{device.thickness}} мм</td>
+    </tr>
+    <tr>
+        <td>Вес: </td>
+        <td>{{device.weight}} гр</td>
+    </tr>
+    <tr>
+        <td>Цвет: </td>
+        <td>{{device.colour}}</td>
+    </tr>
+    <tr>
+        <td>Материал: </td>
+        <td>{{device.material}}</td>
+    </tr>
+    {% if device.screen_size is not None %}
+    <tr>
+        <td>Размер экрана: </td>
+        <td>{{device.screen_size}}</td>
+    </tr>
+    {% endif %}
+    {% if device.processor is not None %}
+    <tr>
+        <td>Процессор: </td>
+        <td>{{device.processor}}</td>
+    </tr>
+    {% endif %}
+    {% if device.battery_capacity is not None %}
+    <tr>
+        <td>Емкость батареи/аккумулятора: </td>
+        <td>{{device.battery_capacity}}</td>
+    </tr>
+    {% endif %}
+    {% if list_criteria %}
+    <tr></tr>
+    {% for row in list_criteria %}
+    <tr>
+        <td>{{row.0}}</td>
+        <td>{{row.1}}</td>
+    </tr>
+    {% endfor %}{% endif %}
+</table>
+{% if not flag %}
+<form action="{% url 'StoreApp:criteria_all' device.id category customer %}" method="post" id="criteria_all">
+            {% csrf_token %}
+            <br><button type="submit" id="crit_button">Больше характеристик</button>
+</form>
+{% else %}
+<form action="{% url 'StoreApp:criteria_no' device.id category customer %}" method="post" id="criteria_no">
+            {% csrf_token %}
+            <br><button type="submit" id="crit_no_button">Меньше характеристик</button>
+</form>
+{% endif %}
+</div>
+<div class="content" id="comment">
+    {% if list_image %}
+        <p>{% for image in list_image %}
+            <img src="{{image}}" id="device_image" loading="lazy" align="middle" alt="Device image">
+        {% endfor %}
+        </p><br>
+    {% else %}
+        <strong>Картинки не найдены! :(</strong><br>
+    {% endif %}
+    {% if customer > 0 %}
+    <form action="{% url 'StoreApp:comment_new' device.id category customer %}" method="post" id="comment_new">
+            {% csrf_token %}
+            Рейтинг:<br><input type="range" id="rating" required name="rating" min="0.1" max="5.0" value="2.5" step="0.1">
+            <input type="text" id="output"><br>
+            Комментарий:<br><textarea name="comment" cols="30" rows="3" placeholder="Это необязательно"></textarea><br>
+            <button type="submit" id="comment_button">Оставить комментарий</button>
+            <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+            <script id="rendered-js-1" >
+                $(document).ready(function () {
+                    $('#output').val($('#rating').val());
+                    $('#rating').mousemove(function () { $('#output').val($('#rating').val()); });
+                    $('#output').change(function () { $('#rating').val($('#output').val()); });
+                });
+            </script>
+    </form>
+    {% endif %}
+    {% if list_comment %}
+        <ol>
+        {% for comment in list_comment %}
+            <li>
+            <b>Кто? {{comment.customer}}</b><br>
+            <b>Когда? {{comment.date_of_feedback}}</b><br>
+            <b>Рейтинг: {{comment.rating_of_device}}</b><br>
+            {% if comment.comment_feedback is not None %}
+                <i id="feedback">Отзыв: {{comment.comment_feedback}}</i><br>
+            {% endif %}
+            <br></li>
+        {% endfor %}
+        </ol>
+        <strong id="all">Всего комментариев: {{list_comment|length}}</strong>
+    {% else %}
+        <br><strong id="fail">Комментарии не найдены :( Станьте первыми!</strong>
+    {% endif %}
+</div>
+</div>
+{% endblock %}

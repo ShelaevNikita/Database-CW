@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block style %}
+    <style>
+        label { font-size: 20px; }
+        input { font-size: 18px; margin-top: 5px;}
+        i { font-size: 20px; }
+        #form_profile { text-align: center; }
+        #customer_profile { width: 200px; height: 40px; font-size: medium; }
+        #date_birth { width: 155px; }
+        #message { text-align: center; color: red; font-size: 18px; }
+    </style>
+{% endblock %}
+{% block content %}
+{% if message != '' %}
+    <div id="message" class="content"><strong>{{message}}</strong></div>
+{% endif %}
+<form action="{% url 'StoreApp:customer_profile_edit' profile.id %}" method="post" autocomplete="on" id="form_profile">
+    {% csrf_token %}
+    <input type="text" required placeholder="Login" name="login" value="{{profile.login}}"/><br>
+    <input type="password" placeholder="Password" name="password" id="password"/><br>
+    <input type="password" placeholder="Password (again)" name="password_again" /><br>
+    <input type="text" required placeholder="Name" name="first_name" value="{{profile.first_name}}"/><br>
+    <input type="text" required placeholder="Surname" name="second_name" value="{{profile.second_name}}"/><br>
+    <i>Gender: </i>
+    <input type="radio" id="radio_1" value="O" name="gender" checked/><label for="radio_1">{{profile.gender}}</label>
+    <input type="radio" id="radio_2" value="N" name="gender" /><label for="radio_2">Other?</label><br>
+    <i>Date of Birth: {{profile.date_of_birth}}</i><br>
+    <i>Modify? </i><input type="date" id="date_birth" placeholder="Date of Birth" name="date_of_birth"/><br>
+    <input type="tel" required placeholder="Phone" name="phone" pattern="^\+?\d{1,3}-[(]\d{3}[)]-\d{3}-\d{4}$" value="{{profile.phone}}"/><br>
+    <input type="email" required placeholder="Email" name="email" value="{{profile.email}}"/><br><br>
+    <button type="submit" id="customer_profile">Accept changes?</button><br>
+</form>
+{% endblock %}
